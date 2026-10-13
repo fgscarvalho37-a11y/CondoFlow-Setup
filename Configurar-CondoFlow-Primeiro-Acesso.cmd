@@ -1,62 +1,81 @@
 @echo off
-setlocal EnableExtensions
-title CondoFlow - Configuracao inicial do computador
+setlocal EnableExtensions DisableDelayedExpansion
+title CondoFlow - Assistente de Configuracao
 color 0B
+mode con: cols=76 lines=34 >nul 2>&1
+
 set "PASTA=%USERPROFILE%\CondoFlowBackups"
 
 cls
 echo.
-echo ============================================================
-echo                  CONDOFLOW - CONFIGURACAO
-echo ============================================================
+echo   ====================================================================
+echo     ____  ___   _   _  ____   ___  _____ _     _____        __
+echo    / ___^|/ _ \ ^| \ ^| ^|^|  _ \ / _ \^|  ___^| ^|   / _ \ \      / /
+echo   ^| ^|   ^| ^| ^| ^|^|  \^| ^|^| ^| ^| ^| ^| ^| ^| ^|_  ^| ^|  ^| ^| ^| \ \ /\ / /
+echo   ^| ^|___^| ^|_^| ^|^| ^|\  ^|^| ^|_^| ^| ^|_^| ^|  _^| ^| ^|__^| ^|_^| ^|\ V  V /
+echo    \____^|\___/ ^|_^| \_^|^|____/ \___/^|_^|   ^|_____\___/  \_/\_/
 echo.
-echo Preparando ambiente de arquivamento no computador...
+echo                       CONFIGURACAO INICIAL
+echo   ====================================================================
 echo.
-
-echo [1/4] Verificando o armazenamento local...
-if not exist "%USERPROFILE%\" (
-  echo ERRO: nao foi possivel localizar a pasta do usuario.
-  goto :erro
-)
+echo     Preparando seu computador para organizar as copias de seguranca.
+echo     Nenhuma instalacao adicional e necessaria neste procedimento.
+echo.
+echo   [01/04] Identificando o perfil do Windows...
+if not defined USERPROFILE goto :erro_perfil
+if not exist "%USERPROFILE%\" goto :erro_perfil
+echo           [##########------------------------------] 25%%  OK
 timeout /t 1 /nobreak >nul
-
-echo [2/4] Configurando a area de arquivos...
-if not exist "%PASTA%\" (
-  mkdir "%PASTA%" >nul 2>&1
-)
-if not exist "%PASTA%\" (
-  echo ERRO: nao foi possivel criar a pasta de arquivos.
-  goto :erro
-)
+echo.
+echo   [02/04] Verificando os componentes locais do Windows...
+if not exist "%SystemRoot%\System32\cmd.exe" goto :erro_sistema
+if not exist "%SystemRoot%\explorer.exe" goto :erro_sistema
+echo           [####################--------------------] 50%%  OK
 timeout /t 1 /nobreak >nul
-
-echo [3/4] Conferindo a estrutura de diretorios...
-if not exist "%PASTA%\" goto :erro
+echo.
+echo   [03/04] Preparando a pasta de copias de seguranca...
+if not exist "%PASTA%\" mkdir "%PASTA%" >nul 2>&1
+if not exist "%PASTA%\" goto :erro_pasta
+echo           [##############################----------] 75%%  OK
 timeout /t 1 /nobreak >nul
-
-echo [4/4] Finalizando a configuracao do computador...
-timeout /t 1 /nobreak >nul
-
 echo.
-echo ============================================================
-echo            CONFIGURACAO INICIAL CONCLUIDA
-echo ============================================================
-echo.
-echo Pasta de copias:
-echo "%PASTA%"
-echo.
-echo Para manter o historico atualizado, baixe e salve as copias
-echo do CondoFlow nesta pasta diariamente ou semanalmente.
-echo.
-echo O aplicativo nao foi alterado por este procedimento.
-echo.
+echo   [04/04] Conferindo a pasta e abrindo os arquivos...
+if not exist "%PASTA%\" goto :erro_pasta
 start "" explorer.exe "%PASTA%"
+echo           [########################################] 100%% OK
+echo.
+echo   ====================================================================
+echo                         CONFIGURACAO CONCLUIDA
+echo   ====================================================================
+echo.
+echo     Pasta de copias: "%PASTA%"
+echo.
+echo     Para guardar os registros, baixe o arquivo ZIP no painel
+echo     do CondoFlow e salve-o nesta pasta, diariamente ou semanalmente.
+echo.
+echo     Este assistente apenas cria e abre a pasta. Nao faz downloads
+echo     de registros e nao modifica o funcionamento do CondoFlow.
+echo.
 pause
 exit /b 0
 
-:erro
+:erro_perfil
 echo.
-echo Nao foi possivel concluir a configuracao.
-echo Verifique a permissao de acesso a pasta do usuario.
+echo     ERRO: Nao foi possivel identificar a pasta do usuario.
+goto :erro_final
+
+:erro_sistema
+echo.
+echo     ERRO: Componente necessario do Windows nao encontrado.
+goto :erro_final
+
+:erro_pasta
+echo.
+echo     ERRO: Nao foi possivel criar ou acessar a pasta de copias.
+goto :erro_final
+
+:erro_final
+echo     Nenhuma informacao do CondoFlow foi alterada.
+echo.
 pause
 exit /b 1
